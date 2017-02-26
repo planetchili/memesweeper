@@ -42,6 +42,8 @@ private:
 private:
 	static constexpr int width = 20;
 	static constexpr int height = 16;
+	static constexpr int borderThickness = 10;
+	static constexpr Color borderColor = Colors::Blue;
 	Vei2 topLeft;
 	bool isFucked = false;
 	Tile field[width * height];
