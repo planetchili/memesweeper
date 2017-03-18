@@ -166,7 +166,10 @@ void MemeField::Draw( Graphics& gfx ) const
 	}
 	if (recursing)
 	{
-		DrawFocus(gfx, recursionGridPos);
+		for (const auto& p : rpts)
+		{
+			DrawFocus(gfx,p );
+		}
 	}
 }
 
@@ -183,7 +186,7 @@ void MemeField::OnRevealClick( const Vei2& screenPos )
 		const Vei2 gridPos = ScreenToGrid( screenPos );
 		assert( gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height );
 		future = std::async(std::launch::async, 
-			[gridPos,this]() { RevealTile(gridPos,std::unique_lock<std::mutex>( mutex ) ); }
+			[gridPos,this]() { RevealTile(gridPos,rColorBase,std::unique_lock<std::mutex>( mutex ) ); }
 		);
 	}
 }
@@ -240,10 +243,11 @@ bool MemeField::IsBusy()
 	return recursing;
 }
 
-std::unique_lock<std::mutex> MemeField::RevealTile(const Vei2& gridPos, std::unique_lock<std::mutex> lock)
+std::unique_lock<std::mutex> MemeField::RevealTile(const Vei2& gridPos,Color parentColor, std::unique_lock<std::mutex> lock)
 {
 	using namespace std::chrono_literals;
-	recursionGridPos = gridPos;
+	const Color c( parentColor.GetR() + 30,parentColor.GetG() - 10,parentColor.GetB() + 10 );
+	rpts.push_back({ gridPos,c });
 	recursing = true;
 	lock.unlock();
 	std::this_thread::sleep_for(120ms);
@@ -269,11 +273,12 @@ std::unique_lock<std::mutex> MemeField::RevealTile(const Vei2& gridPos, std::uni
 			{
 				for( gridPos.x = xStart; gridPos.x <= xEnd; gridPos.x++ )
 				{
-					lock = RevealTile( gridPos,std::move( lock ) );
+					lock = RevealTile( gridPos,c,std::move( lock ) );
 				}
 			}
 		}
 	}
+	rpts.pop_back();
 	return std::move( lock );
 }
 
@@ -328,20 +333,20 @@ bool MemeField::GameIsWon() const
 	return true;
 }
 
-void MemeField::DrawFocus(Graphics& gfx, const Vei2& gridPos) const
+void MemeField::DrawFocus(Graphics& gfx, const RecursionPoint& rp ) const
 {
 	const Vei2 offset(2, 2);
-	const auto topLeft = gridPos * SpriteCodex::tileSize + this->topLeft + offset;
-	const auto bottomRight = (gridPos + Vei2(1,1)) * SpriteCodex::tileSize + this->topLeft - offset;
+	const auto topLeft = rp.gridPos * SpriteCodex::tileSize + this->topLeft + offset;
+	const auto bottomRight = (rp.gridPos + Vei2(1,1)) * SpriteCodex::tileSize + this->topLeft - offset;
 
 	for (int x = topLeft.x; x < bottomRight.x; x++)
 	{
-		gfx.PutPixel(x, topLeft.y, Colors::Red);
-		gfx.PutPixel(x, bottomRight.y - 1, Colors::Red);
+		gfx.PutPixel(x, topLeft.y, rp.color);
+		gfx.PutPixel(x, bottomRight.y - 1, rp.color);
 	}
 	for (int y = topLeft.y; y < bottomRight.y; y++)
 	{
-		gfx.PutPixel(topLeft.x, y, Colors::Red);
-		gfx.PutPixel(bottomRight.x - 1, y, Colors::Red);
+		gfx.PutPixel(topLeft.x, y, rp.color);
+		gfx.PutPixel(bottomRight.x - 1, y, rp.color);
 	}
 }
