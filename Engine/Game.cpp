@@ -40,6 +40,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	field.Sync();
 	while( !wnd.mouse.IsEmpty() )
 	{
 		const auto e = wnd.mouse.Read();
