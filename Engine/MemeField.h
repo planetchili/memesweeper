@@ -2,6 +2,8 @@
 
 #include "Graphics.h"
 #include "Sound.h"
+#include <future>
+#include <mutex>
 
 class MemeField
 {
@@ -44,18 +46,25 @@ public:
 	void OnRevealClick( const Vei2& screenPos );
 	void OnFlagClick( const Vei2& screenPos );
 	State GetState() const;
+	void Sync();
 private:
-	void RevealTile( const Vei2& gridPos );
+	bool IsBusy();
+	std::unique_lock<std::mutex> RevealTile( const Vei2& gridPos,std::unique_lock<std::mutex> lock );
 	Tile& TileAt( const Vei2& gridPos );
 	const Tile& TileAt( const Vei2& gridPos ) const;
 	Vei2 ScreenToGrid( const Vei2& screenPos );
-	int CountNeighborMemes( const Vei2& gridPos );
+	int CountNeighborMemes( const Vei2& gridPos ) const;
 	bool GameIsWon() const;
+	void DrawFocus( Graphics& gfx,const Vei2& gridPos ) const;
 private:
 	static constexpr int width = 8;
 	static constexpr int height = 6;
 	static constexpr int borderThickness = 10;
 	static constexpr Color borderColor = Colors::Blue;
+	bool recursing = false;
+	Vei2 recursionGridPos;
+	mutable std::mutex mutex;
+	std::future<void> future;
 	Sound sndLose = Sound( L"spayed.wav" );
 	Vei2 topLeft;
 	State state = State::Memeing;

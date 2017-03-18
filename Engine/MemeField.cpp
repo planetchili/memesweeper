@@ -154,6 +154,7 @@ MemeField::MemeField( const Vei2& center,int nMemes )
 
 void MemeField::Draw( Graphics& gfx ) const
 {
+	std::lock_guard<std::mutex> lock(mutex);
 	gfx.DrawRect( GetRect().GetExpanded( borderThickness ),borderColor );
 	gfx.DrawRect( GetRect(),SpriteCodex::baseColor );
 	for( Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++ )
@@ -162,6 +163,10 @@ void MemeField::Draw( Graphics& gfx ) const
 		{
 			TileAt( gridPos ).Draw( topLeft + gridPos * SpriteCodex::tileSize,state,gfx );
 		}
+	}
+	if (recursing)
+	{
+		DrawFocus(gfx, recursionGridPos);
 	}
 }
 
@@ -172,21 +177,21 @@ RectI MemeField::GetRect() const
 
 void MemeField::OnRevealClick( const Vei2& screenPos )
 {
-	if( state == State::Memeing )
+	std::unique_lock<std::mutex> lock( mutex );
+	if( !IsBusy() && state == State::Memeing )
 	{
 		const Vei2 gridPos = ScreenToGrid( screenPos );
 		assert( gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height );
-		RevealTile( gridPos );
-		if( GameIsWon() )
-		{
-			state = State::Winrar;
-		}
+		future = std::async(std::launch::async, 
+			[gridPos,this]() { RevealTile(gridPos,std::unique_lock<std::mutex>( mutex ) ); }
+		);
 	}
 }
 
 void MemeField::OnFlagClick( const Vei2 & screenPos )
 {
-	if( state == State::Memeing )
+	std::lock_guard<std::mutex> lock( mutex );
+	if( !IsBusy() && state == State::Memeing )
 	{
 		const Vei2 gridPos = ScreenToGrid( screenPos );
 		assert( gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height );
@@ -204,11 +209,46 @@ void MemeField::OnFlagClick( const Vei2 & screenPos )
 
 MemeField::State MemeField::GetState() const
 {
+	std::lock_guard<std::mutex> lock(mutex);
 	return state;
 }
 
-void MemeField::RevealTile( const Vei2& gridPos )
+void MemeField::Sync()
 {
+	using namespace std::chrono_literals;
+	if (future.valid())
+	{
+		switch (future.wait_for(0ms))
+		{
+		case std::future_status::deferred:
+		case std::future_status::ready:
+			future.get();
+			if (GameIsWon())
+			{
+				state = State::Winrar;
+			}
+			break;
+		case std::future_status::timeout:
+			return;
+		}
+	}
+	recursing = false;
+}
+
+bool MemeField::IsBusy()
+{
+	return recursing;
+}
+
+std::unique_lock<std::mutex> MemeField::RevealTile(const Vei2& gridPos, std::unique_lock<std::mutex> lock)
+{
+	using namespace std::chrono_literals;
+	recursionGridPos = gridPos;
+	recursing = true;
+	lock.unlock();
+	std::this_thread::sleep_for(120ms);
+	lock.lock();
+
 	Tile& tile = TileAt( gridPos );
 	if( !tile.IsRevealed() && !tile.IsFlagged() )
 	{
@@ -229,12 +269,14 @@ void MemeField::RevealTile( const Vei2& gridPos )
 			{
 				for( gridPos.x = xStart; gridPos.x <= xEnd; gridPos.x++ )
 				{
-					RevealTile( gridPos );
+					lock = RevealTile( gridPos,std::move( lock ) );
 				}
 			}
 		}
 	}
+	return std::move( lock );
 }
+
 
 MemeField::Tile& MemeField::TileAt( const Vei2& gridPos )
 {
@@ -251,7 +293,7 @@ Vei2 MemeField::ScreenToGrid( const Vei2& screenPos )
 	return (screenPos - topLeft) / SpriteCodex::tileSize;
 }
 
-int MemeField::CountNeighborMemes( const Vei2 & gridPos )
+int MemeField::CountNeighborMemes( const Vei2& gridPos ) const
 {
 	const int xStart = std::max( 0,gridPos.x - 1 );
 	const int yStart = std::max( 0,gridPos.y - 1 );
@@ -284,4 +326,22 @@ bool MemeField::GameIsWon() const
 		}
 	}
 	return true;
+}
+
+void MemeField::DrawFocus(Graphics& gfx, const Vei2& gridPos) const
+{
+	const Vei2 offset(2, 2);
+	const auto topLeft = gridPos * SpriteCodex::tileSize + this->topLeft + offset;
+	const auto bottomRight = (gridPos + Vei2(1,1)) * SpriteCodex::tileSize + this->topLeft - offset;
+
+	for (int x = topLeft.x; x < bottomRight.x; x++)
+	{
+		gfx.PutPixel(x, topLeft.y, Colors::Red);
+		gfx.PutPixel(x, bottomRight.y - 1, Colors::Red);
+	}
+	for (int y = topLeft.y; y < bottomRight.y; y++)
+	{
+		gfx.PutPixel(topLeft.x, y, Colors::Red);
+		gfx.PutPixel(bottomRight.x - 1, y, Colors::Red);
+	}
 }
