@@ -39,6 +39,11 @@ private:
 		bool hasMeme = false;
 		int nNeighborMemes = -1;
 	};
+	struct RecursionPoint
+	{
+		Vei2 gridPos;
+		Color color;
+	};
 public:
 	MemeField( const Vei2& center,int nMemes );
 	void Draw( Graphics& gfx ) const;
@@ -49,22 +54,23 @@ public:
 	void Sync();
 private:
 	bool IsBusy();
-	std::unique_lock<std::mutex> RevealTile( const Vei2& gridPos,std::unique_lock<std::mutex> lock );
+	std::unique_lock<std::mutex> RevealTile( const Vei2& gridPos,Color parentColor,std::unique_lock<std::mutex> lock );
 	Tile& TileAt( const Vei2& gridPos );
 	const Tile& TileAt( const Vei2& gridPos ) const;
 	Vei2 ScreenToGrid( const Vei2& screenPos );
 	int CountNeighborMemes( const Vei2& gridPos ) const;
 	bool GameIsWon() const;
-	void DrawFocus( Graphics& gfx,const Vei2& gridPos ) const;
+	void DrawFocus( Graphics& gfx, const RecursionPoint& rp) const;
 private:
 	static constexpr int width = 8;
 	static constexpr int height = 6;
 	static constexpr int borderThickness = 10;
+	static constexpr Color rColorBase = {0,128,0};
 	static constexpr Color borderColor = Colors::Blue;
 	bool recursing = false;
-	Vei2 recursionGridPos;
 	mutable std::mutex mutex;
 	std::future<void> future;
+	std::vector<RecursionPoint> rpts;
 	Sound sndLose = Sound( L"spayed.wav" );
 	Vei2 topLeft;
 	State state = State::Memeing;
