@@ -194,6 +194,10 @@ void MemeField::OnFlagClick( const Vei2 & screenPos )
 		if( !tile.IsRevealed() )
 		{
 			tile.ToggleFlag();
+			if( tile.IsFlagged() && GameIsWon() )
+			{
+				state = State::Winrar;
+			}
 		}
 	}
 }
