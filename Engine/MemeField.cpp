@@ -154,7 +154,7 @@ MemeField::MemeField( const Vei2& center,int nMemes )
 
 void MemeField::Draw( Graphics& gfx ) const
 {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock( mutex );
 	gfx.DrawRect( GetRect().GetExpanded( borderThickness ),borderColor );
 	gfx.DrawRect( GetRect(),SpriteCodex::baseColor );
 	for( Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++ )
@@ -191,7 +191,7 @@ void MemeField::OnRevealClick( const Vei2& screenPos )
 	}
 }
 
-void MemeField::OnFlagClick( const Vei2 & screenPos )
+void MemeField::OnFlagClick( const Vei2& screenPos )
 {
 	std::lock_guard<std::mutex> lock( mutex );
 	if( !IsBusy() && state == State::Memeing )
@@ -212,21 +212,21 @@ void MemeField::OnFlagClick( const Vei2 & screenPos )
 
 MemeField::State MemeField::GetState() const
 {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock( mutex );
 	return state;
 }
 
 void MemeField::Sync()
 {
 	using namespace std::chrono_literals;
-	if (future.valid())
+	if( future.valid() )
 	{
-		switch (future.wait_for(0ms))
+		switch( future.wait_for( 0ms ) )
 		{
 		case std::future_status::deferred:
 		case std::future_status::ready:
 			future.get();
-			if (GameIsWon())
+			if( GameIsWon() )
 			{
 				state = State::Winrar;
 			}
@@ -243,14 +243,14 @@ bool MemeField::IsBusy()
 	return recursing;
 }
 
-std::unique_lock<std::mutex> MemeField::RevealTile(const Vei2& gridPos,Color parentColor, std::unique_lock<std::mutex> lock)
+std::unique_lock<std::mutex> MemeField::RevealTile( const Vei2& gridPos,Color parentColor,std::unique_lock<std::mutex> lock )
 {
 	using namespace std::chrono_literals;
 	const Color c( parentColor.GetR() + 30,parentColor.GetG() - 10,parentColor.GetB() + 10 );
-	rpts.push_back({ gridPos,c });
+	rpts.push_back( { gridPos,c } );
 	recursing = true;
 	lock.unlock();
-	std::this_thread::sleep_for(120ms);
+	std::this_thread::sleep_for( 120ms );
 	lock.lock();
 
 	Tile& tile = TileAt( gridPos );
@@ -333,20 +333,20 @@ bool MemeField::GameIsWon() const
 	return true;
 }
 
-void MemeField::DrawFocus(Graphics& gfx, const RecursionPoint& rp ) const
+void MemeField::DrawFocus( Graphics& gfx,const RecursionPoint& rp ) const
 {
-	const Vei2 offset(2, 2);
+	const Vei2 offset( 2,2 );
 	const auto topLeft = rp.gridPos * SpriteCodex::tileSize + this->topLeft + offset;
-	const auto bottomRight = (rp.gridPos + Vei2(1,1)) * SpriteCodex::tileSize + this->topLeft - offset;
+	const auto bottomRight = (rp.gridPos + Vei2( 1,1 )) * SpriteCodex::tileSize + this->topLeft - offset;
 
-	for (int x = topLeft.x; x < bottomRight.x; x++)
+	for( int x = topLeft.x; x < bottomRight.x; x++ )
 	{
-		gfx.PutPixel(x, topLeft.y, rp.color);
-		gfx.PutPixel(x, bottomRight.y - 1, rp.color);
+		gfx.PutPixel( x,topLeft.y,rp.color );
+		gfx.PutPixel( x,bottomRight.y - 1,rp.color );
 	}
-	for (int y = topLeft.y; y < bottomRight.y; y++)
+	for( int y = topLeft.y; y < bottomRight.y; y++ )
 	{
-		gfx.PutPixel(topLeft.x, y, rp.color);
-		gfx.PutPixel(bottomRight.x - 1, y, rp.color);
+		gfx.PutPixel( topLeft.x,y,rp.color );
+		gfx.PutPixel( bottomRight.x - 1,y,rp.color );
 	}
 }
