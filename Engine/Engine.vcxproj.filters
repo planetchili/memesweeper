@@ -66,6 +66,9 @@
     <ClInclude Include="MemeField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SelectionMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">

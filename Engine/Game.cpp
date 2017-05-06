@@ -26,6 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
+	menu( { gfx.GetRect().GetCenter().x,200 } ),
 	field( gfx.GetRect().GetCenter(),4 )
 {
 }
@@ -43,23 +44,37 @@ void Game::UpdateModel()
 	while( !wnd.mouse.IsEmpty() )
 	{
 		const auto e = wnd.mouse.Read();
-		if( field.GetState() == MemeField::State::Memeing )
+		if( state == State::Memesweeper )
 		{
-			if( e.GetType() == Mouse::Event::Type::LPress )
+			if( field.GetState() == MemeField::State::Memeing )
 			{
-				const Vei2 mousePos = e.GetPos();
-				if( field.GetRect().Contains( mousePos ) )
+				if( e.GetType() == Mouse::Event::Type::LPress )
 				{
-					field.OnRevealClick( mousePos );
+					const Vei2 mousePos = e.GetPos();
+					if( field.GetRect().Contains( mousePos ) )
+					{
+						field.OnRevealClick( mousePos );
+					}
+				}
+				else if( e.GetType() == Mouse::Event::Type::RPress )
+				{
+					const Vei2 mousePos = e.GetPos();
+					if( field.GetRect().Contains( mousePos ) )
+					{
+						field.OnFlagClick( mousePos );
+					}
 				}
 			}
-			else if( e.GetType() == Mouse::Event::Type::RPress )
+		}
+		else
+		{
+			const SelectionMenu::Size s = menu.ProcessMouse( e );
+			switch( s )
 			{
-				const Vei2 mousePos = e.GetPos();
-				if( field.GetRect().Contains( mousePos ) )
-				{
-					field.OnFlagClick( mousePos );
-				}
+			case SelectionMenu::Size::Small:
+			case SelectionMenu::Size::Medium:
+			case SelectionMenu::Size::Large:
+				state = State::Memesweeper;
 			}
 		}
 	}
@@ -67,9 +82,16 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	field.Draw( gfx );
-	if( field.GetState() == MemeField::State::Winrar )
+	if( state == State::Memesweeper )
 	{
-		SpriteCodex::DrawWin( gfx.GetRect().GetCenter(),gfx );
+		field.Draw( gfx );
+		if( field.GetState() == MemeField::State::Winrar )
+		{
+			SpriteCodex::DrawWin( gfx.GetRect().GetCenter(),gfx );
+		}
+	}
+	else
+	{
+		menu.Draw( gfx );
 	}
 }
