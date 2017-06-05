@@ -31,6 +31,11 @@ Game::Game( MainWindow& wnd )
 {
 }
 
+Game::~Game()
+{
+	DestroyField();
+}
+
 void Game::Go()
 {
 	gfx.BeginFrame();	
@@ -104,7 +109,6 @@ void Game::CreateField( int width,int height,int nMemes )
 
 void Game::DestroyField()
 {
-	pField->FreeResources();
 	delete pField;
 	pField = nullptr;
 }

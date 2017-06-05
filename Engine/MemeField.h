@@ -39,12 +39,12 @@ private:
 	};
 public:
 	MemeField( const Vei2& center,int width,int height,int nMemes );
+	~MemeField();
 	void Draw( Graphics& gfx ) const;
 	RectI GetRect() const;
 	void OnRevealClick( const Vei2& screenPos );
 	void OnFlagClick( const Vei2& screenPos );
 	State GetState() const;
-	void FreeResources();
 private:
 	void RevealTile( const Vei2& gridPos );
 	Tile& TileAt( const Vei2& gridPos );
