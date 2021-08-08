@@ -40,6 +40,28 @@ void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx) const
     }
 }
 
+void MineField::Tile::Reveal()
+{
+    assert(state == State::Hidden);
+    state = State::Revealed;
+}
+
+bool MineField::Tile::IsRevealed() const
+{
+    return state == State::Revealed;
+}
+
+void MineField::OnRevealClick(const Vei2& screenPos)
+{
+    //convert screenPos to gridPos
+    const Vei2 gridPos = ScreenToGrid(screenPos);
+    assert(gridPos.x > 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
+
+    Tile& tile = TileAt(gridPos);
+    if (!tile.IsRevealed())
+        tile.Reveal();
+}
+
 MineField::MineField(int nMines)
 {
     assert(nMines > 0 && nMines < nFields);
@@ -58,6 +80,14 @@ MineField::MineField(int nMines)
         while (TileAt(spawnPos).HasMine()); //check if there is already a bomb in that position - you need to map the grid to 1D array - separete fn for that
 
         TileAt(spawnPos).SpawnMine();
+    }
+
+    //reveal test
+    for (int i = 0; i < 120; i++)
+    {
+        const Vei2 gridPos = { xDist(rng), yDist(rng) };
+        if (!TileAt(gridPos).IsRevealed())
+            TileAt(gridPos).Reveal();
     }
 
 }
@@ -89,4 +119,9 @@ MineField::Tile& MineField::TileAt(const Vei2& gridPos)
 const MineField::Tile& MineField::TileAt(const Vei2& gridPos) const
 {
     return field[gridPos.y * width + gridPos.x];
+}
+
+const Vei2 MineField::ScreenToGrid(const Vei2& screenPos)
+{
+    return (screenPos / SpriteCodex::tileSize);
 }
