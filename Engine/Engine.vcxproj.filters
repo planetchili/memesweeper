@@ -63,10 +63,10 @@
     <ClInclude Include="SpriteCodex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MemeField.h">
+    <ClInclude Include="SelectionMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SelectionMenu.h">
+    <ClInclude Include="MineField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,7 +104,7 @@
     <ClCompile Include="SpriteCodex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MemeField.cpp">
+    <ClCompile Include="MineField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
