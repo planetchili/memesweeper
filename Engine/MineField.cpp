@@ -75,6 +75,7 @@ RectI MineField::GetRect() const
 
 void MineField::DrawBoarder(Graphics& gfx) const
 {
+    assert(boardLeft > 0 && boardRight < Graphics::ScreenWidth && boardTop > 0 && boardBottom < Graphics::ScreenHeight);
     // Left, Right, Top, Bottom Rect
     gfx.DrawRect(boardLeft - boardOffset, boardTop, boardLeft, boardBottom, boardColor);
     gfx.DrawRect(boardRight, boardTop, boardRight + boardOffset, boardBottom, boardColor);
