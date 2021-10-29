@@ -24,7 +24,8 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	mineField(20)
 {
 }
 
@@ -42,4 +43,6 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	mineField.DrawBoarder(gfx);
+	mineField.Draw(gfx);
 }
