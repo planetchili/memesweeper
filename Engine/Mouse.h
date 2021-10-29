@@ -20,6 +20,7 @@
  ******************************************************************************************/
 #pragma once
 #include <queue>
+#include "Vei2.h"
 
 class Mouse
 {
@@ -73,6 +74,10 @@ public:
 		std::pair<int,int> GetPos() const
 		{
 			return{ x,y };
+		}
+		Vei2 GetPosVei() const
+		{
+			return Vei2(x, y);
 		}
 		int GetPosX() const
 		{
