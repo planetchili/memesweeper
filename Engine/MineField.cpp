@@ -96,7 +96,15 @@ void MineField::Tile::Reveal()
 
 void MineField::Tile::ToggleFlag()
 {
-    states = State::Flagged;
+    assert(states != State::Revealed);
+    if (states == State::Hidden)
+    {
+        states = State::Flagged;
+    }
+    else
+    {
+        states = State::Hidden;
+    }
 }
 
 void MineField::Tile::SetNeighborMineCount(int mineCount)
@@ -183,7 +191,7 @@ void MineField::OnFlagClick(const Vei2& mousePos)
     {
         const Vei2 gridPos = ScreenToGrid(mousePos);
         Tile& tile = TileAt(gridPos);
-        if (!tile.IsFlagged())
+        if (!tile.IsRevealed())
         {
             tile.ToggleFlag();
         }
