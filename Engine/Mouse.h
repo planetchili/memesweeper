@@ -77,7 +77,7 @@ public:
 		}
 		Vei2 GetPosVei() const
 		{
-			return Vei2(x, y);
+			return { x, y };
 		}
 		int GetPosX() const
 		{
