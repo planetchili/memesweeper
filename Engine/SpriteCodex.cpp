@@ -801,6 +801,41 @@ void SpriteCodex::DrawTile8( const Vei2& pos,Graphics& gfx )
 	gfx.PutPixel( 0 + pos.x,15 + pos.y,128,128,128 );
 }
 
+void SpriteCodex::DrawTileNum(const Vei2& pos, Graphics& gfx, int num)
+{
+	assert(num >= 0 && num <= 8);
+	switch (num)
+	{
+	case 0:
+		DrawTile0(pos, gfx);
+		break;
+	case 1:
+		DrawTile1(pos, gfx);
+		break;
+	case 2:
+		DrawTile2(pos, gfx);
+		break;
+	case 3:
+		DrawTile3(pos, gfx);
+		break;
+	case 4:
+		DrawTile4(pos, gfx);
+		break;
+	case 5:
+		DrawTile5(pos, gfx);
+		break;
+	case 6:
+		DrawTile6(pos, gfx);
+		break;
+	case 7:
+		DrawTile7(pos, gfx);
+		break;
+	case 8:
+		DrawTile8(pos, gfx);
+		break;
+	}
+}
+
 void SpriteCodex::DrawTileButton( const Vei2& pos,Graphics& gfx )
 {
 	gfx.PutPixel( 0 + pos.x,0 + pos.y,255,255,255 );

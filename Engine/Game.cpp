@@ -24,7 +24,8 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	memeField(1)
 {
 }
 
@@ -38,8 +39,35 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	if (!memeField.IsGameOver()) 
+	{
+		while (!wnd.mouse.IsEmpty())
+		{
+			const Mouse::Event e = wnd.mouse.Read();
+			if (e.GetType() == Mouse::Event::Type::LPress)
+			{
+				Vei2 pos = wnd.mouse.GetPos();
+				
+				if (!memeField.IsMemesSpawned()) {
+					memeField.SpawnBombs(pos);
+				}
+
+				memeField.OpenCell(pos);
+			}
+			else if (e.GetType() == Mouse::Event::Type::RPress)
+			{
+				Vei2 pos = wnd.mouse.GetPos();
+				memeField.FlagCell(pos);
+			}
+		}
+	}
 }
 
 void Game::ComposeFrame()
 {
+	if (memeField.IsWon()) {
+		memeField.Reset();
+	}
+
+	memeField.Draw(gfx);
 }
