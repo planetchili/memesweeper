@@ -26,8 +26,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	menu( { gfx.GetRect().GetCenter().x,200 } ),
-	field( gfx.GetRect().GetCenter(),4 )
+	menu( { gfx.GetRect().GetCenter().x,200 } )
+	//field( gfx.GetRect().GetCenter(),4 )
 {
 }
 

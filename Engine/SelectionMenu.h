@@ -26,6 +26,7 @@ private:
 			s( s ),
 			rect( RectI::FromCenter( pos,SpriteCodex::sizeselWidth / 2,SpriteCodex::sizeselHeight / 2 ) )
 		{}
+		//Draws rectangle, if mouse hovered draws bigger, higlited rect, else normal
 		void Draw( Graphics& gfx ) const
 		{
 			if( highlighted )

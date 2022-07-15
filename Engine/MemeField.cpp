@@ -121,11 +121,15 @@ void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 	nNeighborMemes = memeCount;
 }
 
-MemeField::MemeField( const Vei2& center,int nMemes )
+MemeField::MemeField( const Vei2& center, int x, int y )
 	:
-	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 )
+	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 ),
+	width(x), 
+	height(y)
 {
-	assert( nMemes > 0 && nMemes < width * height );
+	field = new Tile[width * height];
+	int nMemes = width * height / 12;
+	//assert( nMemes > 0 && nMemes < width * height );
 	std::random_device rd;
 	std::mt19937 rng( rd() );
 	std::uniform_int_distribution<int> xDist( 0,width - 1 );
