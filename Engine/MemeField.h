@@ -52,12 +52,12 @@ private:
 	int CountNeighborMemes( const Vei2& gridPos );
 	bool GameIsWon() const;
 private:
-	int width = 8;
-	int height = 6;
+	int width;
+	int height;
 	static constexpr int borderThickness = 10;
 	static constexpr Color borderColor = Colors::Blue;
 	Sound sndLose = Sound( L"spayed.wav" );
 	Vei2 topLeft;
 	State state = State::Memeing;
-	Tile* field;
+	Tile* field = nullptr;
 };

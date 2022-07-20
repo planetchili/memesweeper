@@ -279,10 +279,12 @@ int MemeField::CountNeighborMemes( const Vei2 & gridPos )
 
 bool MemeField::GameIsWon() const
 {
-	for( const Tile& t : field )
+	const int size = width * height;
+	Tile* end = field + size;
+	for (const Tile* t = field; t != end; ++t)
 	{
-		if( (t.HasMeme() && !t.IsFlagged()) ||
-			(!t.HasMeme() && !t.IsRevealed()) )
+		if( (t->HasMeme() && !t->IsFlagged()) ||
+			(!t->HasMeme() && !t->IsRevealed()) )
 		{
 			return false;
 		}
