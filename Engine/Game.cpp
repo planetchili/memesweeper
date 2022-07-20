@@ -74,19 +74,21 @@ void Game::UpdateModel()
 			case SelectionMenu::Size::Small:
 			{
 				field = new MemeField(gfx.GetRect().GetCenter(), 8,4);
+				state = State::Memesweeper;
 				break;
 			}
 			case SelectionMenu::Size::Medium:
 			{
 				field = new MemeField(gfx.GetRect().GetCenter(), 12, 6);
+				state = State::Memesweeper;
 				break;
 			}
 			case SelectionMenu::Size::Large:
 			{
 				field = new MemeField(gfx.GetRect().GetCenter(), 16, 8);
+				state = State::Memesweeper;
 				break;
 			}
-				state = State::Memesweeper;
 			}
 		}
 	}
