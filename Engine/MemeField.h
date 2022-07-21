@@ -44,6 +44,7 @@ public:
 	void OnRevealClick( const Vei2& screenPos );
 	void OnFlagClick( const Vei2& screenPos );
 	State GetState() const;
+	void NewGame();
 private:
 	void RevealTile( const Vei2& gridPos );
 	Tile& TileAt( const Vei2& gridPos );

@@ -42,6 +42,7 @@ public:
 private:
 	void ComposeFrame();
 	void UpdateModel();
+	void StartNewGame();
 	/********************************/
 	/*  User Functions              */
 	/********************************/

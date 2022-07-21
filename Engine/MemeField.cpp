@@ -211,6 +211,11 @@ MemeField::State MemeField::GetState() const
 	return state;
 }
 
+void MemeField::NewGame()
+{
+	state = State::Memeing;
+}
+
 void MemeField::RevealTile( const Vei2& gridPos )
 {
 	Tile& tile = TileAt( gridPos );

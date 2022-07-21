@@ -65,6 +65,12 @@ void Game::UpdateModel()
 					}
 				}
 			}
+			else {
+				if (e.GetType() == Mouse::Event::Type::LPress ||
+					e.GetType() == Mouse::Event::Type::RPress)
+					StartNewGame();	
+				
+			}
 		}
 		else
 		{
@@ -92,6 +98,12 @@ void Game::UpdateModel()
 			}
 		}
 	}
+}
+
+void Game::StartNewGame()
+{
+	field->NewGame();
+	state = State::SelectionMenu;
 }
 
 void Game::ComposeFrame()
