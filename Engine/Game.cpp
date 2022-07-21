@@ -96,16 +96,18 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	if( state == State::Memesweeper )
-	{
-		field->Draw( gfx );
-		if( field->GetState() == MemeField::State::Winrar )
+
+
+	switch (state) {
+	case State::Memesweeper: {
+		field->Draw(gfx);
+		if (field->GetState() == MemeField::State::Winrar)
 		{
-			SpriteCodex::DrawWin( gfx.GetRect().GetCenter(),gfx );
+			SpriteCodex::DrawWin(gfx.GetRect().GetCenter(), gfx);
 		}
 	}
-	else
-	{
-		menu.Draw( gfx );
+	case State::SelectionMenu: {
+		menu.Draw(gfx);
+	}
 	}
 }
