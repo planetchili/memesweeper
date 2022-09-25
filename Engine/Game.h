@@ -28,6 +28,12 @@
 class Game
 {
 public:
+	enum class Status {
+		Paused,
+		Started,
+		Over
+	};
+public:
 	Game( class MainWindow& wnd );
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
@@ -45,4 +51,5 @@ private:
 	/*  User Variables              */
 	/********************************/
 	Minefield minefield;
+	Status status = Status::Started;
 };

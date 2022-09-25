@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	minefield(16, {0,0})
+	minefield(100, {0,0})
 {
 }
 

@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "SpriteCodex.h"
 #include "Mouse.h"
+#include <random>
 
 class Minefield
 {
@@ -18,6 +19,8 @@ private:
 		void ToggleFlag();
 		bool IsRevealed();
 		bool IsFlagged();
+		void SpawnMine();
+		bool HasMine();
 		Status& GetStatus();
 	private:
 		Status status = Status::Hidden;
@@ -36,5 +39,6 @@ private:
 	Cell field[width * height];
 	int nMines;
 	Vei2 pos;
+	bool isDead = false;
 };
 
