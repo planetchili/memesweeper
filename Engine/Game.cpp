@@ -20,6 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -39,6 +40,18 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	while (!wnd.mouse.IsEmpty())
+	{
+		const Mouse::Event e = wnd.mouse.Read();
+		if (e.GetType() == Mouse::Event::Type::LPress)
+		{
+			minefield.RevealOnClick(e.GetPos());
+		}
+		else if (e.GetType() == Mouse::Event::Type::RPress)
+		{
+			minefield.ToggleFlagOnClick(e.GetPos());
+		}
+	}
 }
 
 void Game::ComposeFrame()
