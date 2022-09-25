@@ -1,5 +1,6 @@
 #include "Minefield.h"
 #include <assert.h>
+#include <algorithm>
 
 Minefield::Minefield(int in_nMines, Vei2 in_pos)
 {
@@ -49,7 +50,7 @@ void Minefield::Draw(Graphics& gfx)
 					}
 					else
 					{
-						SpriteCodex::DrawTile0(screenPos, gfx);
+						SpriteCodex::DrawTile0(screenPos,gfx);
 					}
 					break;
 				case Cell::Status::Flagged:
@@ -126,7 +127,7 @@ void Minefield::ToggleFlagOnClick(const Vei2& screenPos)
 	if (gridPos.x < width && gridPos.x >= 0 && gridPos.y < height && gridPos.y >= 0)
 	{
 		Cell& cell = CellAt(gridPos);
-		assert(gridPos.x > 0 && gridPos.x < width&& gridPos.y > 0 && gridPos.y < height);
+		assert(gridPos.x >= 0 && gridPos.x < width&& gridPos.y >= 0 && gridPos.y < height);
 		cell.ToggleFlag();
 	}
 }
