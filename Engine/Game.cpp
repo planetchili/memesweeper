@@ -42,4 +42,6 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	Vector2D v = Vector2D(Vector2D(400, 300));
+	
 }
